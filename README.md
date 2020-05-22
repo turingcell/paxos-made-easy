@@ -61,7 +61,7 @@ Paxos算法本身非常简单，它在实际应用中的优化也非常的直接
 
 **本文所有的讨论均建立在“系统中不存在[拜占庭错误](https://zh.wikipedia.org/wiki/%E6%8B%9C%E5%8D%A0%E5%BA%AD%E5%B0%86%E5%86%9B%E9%97%AE%E9%A2%98)”这一前提之下。**
 
-本文在[此仓库中](https://github.com/hnes/paxos-made-easy)进行版本控制，热烈欢迎新的Issue和PR : )
+本文在[此仓库中](https://github.com/turingcell/paxos-made-easy)进行版本控制，热烈欢迎新的Issue和PR : )
 
 ### 2 认识Paxos
 
@@ -168,7 +168,7 @@ end
 
 **_P(e)_ 的语义:**
 
-&emsp;**Acceptor收到*P(e)*请求后，先判断条件 *e > t.p\_e* 是否为真**
+&emsp;**Acceptor收到 *P(e)* 请求后，先判断条件 *e > t.p\_e* 是否为真**
 
 &emsp;&emsp;**• 为真，执行赋值语句 *t.p\_e = e* 更新状态表*t*，然后将*t*持久存储，最终返回 _\{ true, t.a\_e, t.a\_v \}_**
 
@@ -681,3 +681,4 @@ Website: https://turingcell.org/paxos-made-easy
 License: This work is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/), except the picture of the [TuringCell Logo](https://github.com/turingcell/logo) which is under the [Creative Commons Attribution-NoDerivatives 4.0 International License](http://creativecommons.org/licenses/by-nd/4.0/).
 
 本作品开头处的[TuringCell Logo](https://github.com/turingcell/logo)图片采用[知识共享署名-禁止演绎 4.0 国际许可协议](http://creativecommons.org/licenses/by-nd/4.0/)进行许可，作品中除此logo之外的所有部分均采用[知识共享署名-相同方式共享 4.0 国际许可协议](https://creativecommons.org/licenses/by-sa/4.0/)进行许可。
+
