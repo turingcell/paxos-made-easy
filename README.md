@@ -676,7 +676,7 @@ v1.1  2020.5
 
 Author: Sen Han (韩森) <00hnes@gmail.com>
 
-Website: https://turingcell.org/paxos-made-easy
+Website: https://github.com/turingcell/paxos-made-easy
 
 License: This work is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/), except the picture of the [TuringCell Logo](https://github.com/turingcell/logo) which is under the [Creative Commons Attribution-NoDerivatives 4.0 International License](http://creativecommons.org/licenses/by-nd/4.0/).
 
