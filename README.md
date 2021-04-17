@@ -2,7 +2,7 @@
 
 ## Paxos Made Easy: Paxos算法的几何意义与证明
 
-Note: The English version of this article still needs to take some more time to come out. Please wait with patience. I'm very sorry about that for my spare time is so limited. But anyway, the English version will definitely come out in the future.
+Here is the [English Version](README_en.md) of this paper.
 
 ----
 
