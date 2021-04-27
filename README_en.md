@@ -284,7 +284,7 @@ send_prepare_to_majority(e) -> p_next_e, p_ok_list, max_a_v
 Function *send\_prepare\_to\_majority(e)* sends _Prepare(e)_ request to greater or equal to *majorityN*  (referred to as 'more than half') Acceptors in Paxos configuration, the returned value is defined as:
 
 * *p\_ok\_list* is the Acceptor list that have returned successful result (*true*) to *Prepare(e)* request;
-* *max\_a\_v* is the *t.a\_v* value that has the **greatest non-zero *t.a\_e* returned value** among all successful *Prepare(e)* returned values.
+* *max\_a\_v* is the *t.a\_v* value that has the **greatest non-zero *t.a\_e* returned value** among all successful *Prepare(e)* returned values, if not exist, *nil* is returned.
 * *p\_next\_e* is a suggested index value used to optimize Proposer's performance. In common its value is the greatest *t.p\_e* value in all *Prepare(e)* returned values plus one, if not exist, *nil* is returned. This value doesn't influence the correctness of Paxos, but might influence the performance.
 
 ```lua
@@ -300,14 +300,14 @@ Function *send\_accept\_to(p\_ok\_list, e, v)*  sends _Accept(e,v)_  to each Acc
 proposer_propose(v, e) -> {chosen_flag, help_chosen_flag, chosen_v, next_e}
 ```
 
-**Each call of function *proposer\_propose(v, e)* should be referred to as the creation, run and exit of  an unique Proposer, which means a complete life cycle of a Proposer.**
+**Each call of function *proposer\_propose(v, e)* should be regarded as the creation, run and exit of  an unique Proposer, which means a complete life cycle of a Proposer.**
 
-Function *proposer\_propose(v, e)* starts a commit with value *v*, in which the parameter *e* is a constant, positive integer with arbitrary precision and default value 1, used for optimization of Proposers. The return values of this function are defined as following:
+Function *proposer\_propose(v, e)* starts a proposal with value *v*, in which the parameter *e* is a constant, positive integer with arbitrary precision and default value 1, used for optimization of Proposers. The returned values of this function are defined as follows:
 
-* *chosen\_flag*: a boolean value, if true it means a commit has been *chosen* (committed), otherwise it means current Proposer thinks this commit has failed (if returned values from some A operations are lost, even though the commit has been chosen, Proposer will still determine that this commit has failed)
+* *chosen\_flag*: a boolean value, if true it means a proposal has been *chosen*, otherwise it means current Proposer thinks this proposal has failed (if returned values from some A operations are lost, even though the proposal has been chosen, Proposer will still determine that this proposal has failed)
 * *help\_chosen\_flag*: a boolean value, only makes sense when the returned value *chosen\_flag* is true
-  * if *chosen\_flag* is true and *help\_chosen\_flag* is true: the chosen value *chosen\_v* is the value other Proposers has committed, which means some other Proposer has been helped to choose a commit value *chosen\_v*, but not choose the commit *v* from parameter.
-  * if *chosen\_flag* is true and *help\_chosen\_flag* is false: the chosen commit value *chosen\_v* is the commit *v* from parameters, which means this chosen commit is the commit from Proposer who has called the function
+  * if *chosen\_flag* is true and *help\_chosen\_flag* is true: the final chosen value *chosen\_v* is the value that another Proposer proposed earlier. This means current Proposer has helped another Proposer choose a proposal value *chosen\_v*, instead of choosing the proposal value *v* from parameter.
+  * if *chosen\_flag* is true and *help\_chosen\_flag* is false: the chosen proposal value *chosen\_v* is the proposal *v* from parameters, which means this chosen proposal is the proposal from the Proposer itself who has called the function
 * *chosen\_v* is an binary string with arbitrary size, that means the chosen value, if not exist, *nil* is returned;
 * *next\_e* is a recommended value *e* used for Proposer's optimization, mainly used in the iteration calls of function *proposer\_propose*, usage shown as follows:
 
@@ -369,7 +369,7 @@ In addition, because time used in network transport must be greater than zero, t
 
 Assume there is a God role 𝓖, who knows the past, the present and the future. Time makes no sense to 𝓖. **𝓖 only concerns all past, present and future PAs in a Paxos instance**. Here are definitions for some symbols and conventions.
 
-One PA contains two kinds of operations *P(e)* and *A(e, v)*, parameter *e* must be the same to all P and A operations in one PA. We refer to this *e* as the **e value of this PA**, similarly we refer to *v* in *A(e,v)* as the **v value of this PA**, also known as the **committed value of the proposal** of PA.
+One PA contains two kinds of operations *P(e)* and *A(e, v)*, parameter *e* must be the same in all P and A operations in one PA. We refer to this *e* as the **e value of this PA**, similarly we refer to *v* in *A(e,v)* as the **v value of this PA**, also known as the **proposed value of the proposal** of PA.
 
 One PA could be written as ***PA(e)***, in which e means the e value of corresponding PA. One *PA(e)* may be Chosen PA or Unchosen PA. To distinguish between them, symbols **U** and **C** are defined. **U** refers to as **U**nchosen PA, **C** refers to **C**hosen PA.
 
@@ -456,7 +456,7 @@ We have
 
 &emsp;**Conclusion 0.1.3**&emsp;**At least one returned value of *PA(e₁)* of all successful P operations satisfy *e₀ ≤ a_e < e₁***
 
-Because v value of A operation of *PA(e₁)* event is the *a_v* value of successful P returned value that has the greatest non-zero *a_e* value among all successful *P(e₁)* returned values. When such *a_v* doesn't exist, a new commit value v can be proposed. According to Acceptor monotonicity theorem, 𝓖 Table Theorem 0.3, conclusion 0.1.1, 0.1.2, 0.1.3 and Proposer definition
+Because v value of A operation of *PA(e₁)* event is the *a_v* value of successful P returned value that has the greatest non-zero *a_e* value among all successful *P(e₁)* returned values. When such *a_v* doesn't exist, a new proposal value v can be proposed. According to Acceptor monotonicity theorem, 𝓖 Table Theorem 0.3, conclusion 0.1.1, 0.1.2, 0.1.3 and Proposer definition
 
 ![paxos_timeline_new_proof_16](img/paxos_timeline_new_proof_16.jpg)
 
@@ -518,7 +518,7 @@ Set C is actually the intersection of two majority Acceptor, therefore C must be
 
 Therefore, there must be at least one time-line diagram shown that satisfy, so the Theorem is proven.
 
-**Paxos Theorem**&emsp;**In a running Paxos instance, suppose the chosen PA with smallest e value *PA(e₀)* has chosen proposal value *v₀*, then all the other chosen PA must be help-chosen PA, and the commited value must be equal to *v₀***
+**Paxos Theorem**&emsp;**In a running Paxos instance, suppose the chosen PA with smallest e value *PA(e₀)* has chosen proposal value *v₀*, then all the other chosen PA must be help-chosen PA, and the proposal value must be equal to *v₀***
 
 **Proof**
 
